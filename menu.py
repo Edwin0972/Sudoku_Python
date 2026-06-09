@@ -201,16 +201,16 @@ def ouvrir_regles():
         "Interruption : -1 / -2 / -3 pts selon le niveau.",
     ]
     for ligne in regles:
-        tk.Label(fenetre_regle, text=ligne, font=("Arial", 11), anchor="w").pack(fill="x", padx=15, pady=2)
+        tk.Label(fenetre_regle, text=ligne, font=("Arial", 15), anchor="center").pack(fill="x", padx=15, pady=2)
 
 # ── Crédits ──
 def ouvrir_credits():
     fenetre_credits = tk.Toplevel(app)
     fenetre_credits.title("Crédits")
     fenetre_credits.geometry("300x150")
-    tk.Label(fenetre_credits, text="Benjamin DIDRIT-VERDIET", font=("Arial", 12)).pack(pady=5)
-    tk.Label(fenetre_credits, text="Edwin MOLINIER",          font=("Arial", 12)).pack(pady=5)
-    tk.Label(fenetre_credits, text="Titouan SABRAS",          font=("Arial", 12)).pack(pady=5)
+    tk.Label(fenetre_credits, text="Benjamin DIDRIT-VERDIET", font=("Arial", 15),justify="center").pack(pady=5)
+    tk.Label(fenetre_credits, text="Edwin MOLINIER",          font=("Arial", 15),justify="center").pack(pady=5)
+    tk.Label(fenetre_credits, text="Titouan SABRAS",          font=("Arial", 15),justify="center").pack(pady=5)
 
 # ── Fenêtre principale ──
 app = tk.Tk()
