@@ -3,25 +3,29 @@
 def charger_sauvegarde():
     """
     Charge une partie sauvegardée depuis save.txt.
-    Retourne le contenu sous forme de liste 9x9, ou None si aucune sauvegarde.
+    Retourne (difficulte, nom_joueur, grille_actuelle, grille_originale)
+    ou None si aucune sauvegarde.
     """
     try:
         with open("save.txt", "r") as fichier:
             lignes = fichier.read().strip().split("\n")
-        grille = []
-        for ligne in lignes:
-            grille.append([int(x) for x in ligne.split(",")])
+        difficulte    = lignes[0]
+        nom_joueur    = lignes[1]
+        grille_actuelle  = [[int(x) for x in lignes[i].split(",")]   for i in range(2, 11)]
+        grille_originale = [[int(x) for x in lignes[i].split(",")]   for i in range(11, 20)]
         print("Sauvegarde chargée.")
-        return grille
-    except FileNotFoundError:
-        print("Aucune sauvegarde.")
+        return difficulte, nom_joueur, grille_actuelle, grille_originale
+    except (FileNotFoundError, IndexError, ValueError):
         return None
 
 def charger_grille(difficulte):
     """
     Charge une grille depuis un fichier texte selon le niveau.
-    Retourne la grille sous forme de liste 9x9, ou None si fichier introuvable.
+    Si le fichier n'existe pas, utilise generer_grille() comme fallback.
+    Retourne la grille sous forme de liste 9x9.
     """
+    from Generation import generer_grille  # import ici pour éviter les imports circulaires
+
     if difficulte == "Facile":
         nom_fichier = "niveau_facile.txt"
     elif difficulte == "Intermédiaire":
@@ -32,10 +36,9 @@ def charger_grille(difficulte):
     try:
         with open(nom_fichier, "r") as fichier:
             lignes = fichier.read().strip().split("\n")
-        grille = []
-        for ligne in lignes:
-            grille.append([int(x) for x in ligne.split(",")])
+        grille = [[int(x) for x in ligne.split(",")] for ligne in lignes]
+        print(f"Grille chargée depuis {nom_fichier}.")
         return grille
     except FileNotFoundError:
-        print(f"Fichier introuvable : {nom_fichier}")
-        return None
+        print(f"{nom_fichier} introuvable, génération aléatoire.")
+        return generer_grille(difficulte)
