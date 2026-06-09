@@ -15,8 +15,7 @@ def ouvrir_scores():
     fenetre_scores=tk.Toplevel(app)
     fenetre_scores.title("Tableau des scores")
     fenetre_scores.gemoetry("300x200")
-    with open("score.txt") as fichier:
-        fichier.write("Scores : ")
+    open("score.txt")
 #Afficher les règles
 def ouvrir_regles():
     fenetre_regle=tk.Toplevel(app)
