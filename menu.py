@@ -1,39 +1,12 @@
 # Affichage des menus
 import tkinter as tk
 from tkinter import messagebox, simpledialog
-import random
 from Calcul_Score import calculer_score
+from Generation import generer_grille, GRILLE_SOLUTION
 
 # ── Variables globales ──
 difficulte = ""
 score_total = 0
-
-# ── Grille Sudoku valide de référence ──
-GRILLE_SOLUTION = [
-    [5, 3, 4, 6, 7, 8, 9, 1, 2],
-    [6, 7, 2, 1, 9, 5, 3, 4, 8],
-    [1, 9, 8, 3, 4, 2, 5, 6, 7],
-    [8, 5, 9, 7, 6, 1, 4, 2, 3],
-    [4, 2, 6, 8, 5, 3, 7, 9, 1],
-    [7, 1, 3, 9, 2, 4, 8, 5, 6],
-    [9, 6, 1, 5, 3, 7, 2, 8, 4],
-    [2, 8, 7, 4, 1, 9, 6, 3, 5],
-    [3, 4, 5, 2, 8, 6, 1, 7, 9],
-]
-
-def masquer_cases(niveau):
-    if niveau == "Facile":
-        nb_visibles = 40
-    elif niveau == "Intermédiaire":
-        nb_visibles = 35
-    else:
-        nb_visibles = 30
-    grille = [ligne[:] for ligne in GRILLE_SOLUTION]
-    positions = [(r, c) for r in range(9) for c in range(9)]
-    random.shuffle(positions)
-    for r, c in positions[nb_visibles:]:
-        grille[r][c] = 0
-    return grille
 
 # Créer le menu du choix de difficulté
 def ouvrir_niveaux():
@@ -56,7 +29,7 @@ def lancer_partie(niveau, fenetre_niveaux):
     nom = simpledialog.askstring("Nom du joueur", "Entrez votre prénom :", parent=app)
     nom_joueur = nom if nom else "Joueur"
 
-    grille_joueur = masquer_cases(difficulte)
+    grille_joueur = generer_grille(difficulte)
 
     fenetre_jeu = tk.Toplevel(app)
     fenetre_jeu.title(f"Sudoku — {difficulte}")
