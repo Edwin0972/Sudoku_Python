@@ -768,7 +768,7 @@ def ouvrir_credits():
     cadre = tk.Frame(frame_page, bg=FOND)
     cadre.pack(expand=True)
 
-    membres = ["Benjamin DIDRIT-VERDIET", "Edwin MOLINIER", "Titouan SABRAS"]
+    membres = ["Titouan SABRAS","Edwin MOLINIER","Benjamin DIDRIT-VERDIET"]
     for membre in membres:
         tk.Label(cadre, text=membre, font=("Arial", 13),
                  bg=FOND, fg=TEXTE).pack(pady=10)
