@@ -37,3 +37,38 @@ def generer_grille(difficulte):
         grille[r][c] = 0
 
     return grille
+
+
+def placement_valide(grille, ligne, colonne, valeur):
+    """Verifie si valeur peut etre placee en (ligne, colonne) selon les regles."""
+    for j in range(9):
+        if grille[ligne][j] == valeur:
+            return False
+    for i in range(9):
+        if grille[i][colonne] == valeur:
+            return False
+    debut_l = (ligne // 3) * 3
+    debut_c = (colonne // 3) * 3
+    for i in range(debut_l, debut_l + 3):
+        for j in range(debut_c, debut_c + 3):
+            if grille[i][j] == valeur:
+                return False
+    return True
+
+
+def resoudre_grille(grille):
+    """
+    Resout la grille par backtracking (modifie la grille en place).
+    Retourne True si une solution est trouvee.
+    """
+    for i in range(9):
+        for j in range(9):
+            if grille[i][j] == 0:
+                for valeur in range(1, 10):
+                    if placement_valide(grille, i, j, valeur):
+                        grille[i][j] = valeur
+                        if resoudre_grille(grille):
+                            return True
+                        grille[i][j] = 0
+                return False
+    return True

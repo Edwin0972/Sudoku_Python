@@ -36,7 +36,22 @@ def charger_grille(difficulte):
     try:
         with open(nom_fichier, "r") as fichier:
             lignes = fichier.read().strip().split("\n")
-        grille = [[int(x) for x in ligne.split(",")] for ligne in lignes]
+        grille = []
+        for ligne in lignes:
+            ligne = ligne.strip()
+            if ligne == "":
+                continue
+            if "," in ligne:
+                # Format avec virgules
+                nombres = [int(x) for x in ligne.split(",")]
+            else:
+                # Format chiffres colles (ex: 530070000)
+                nombres = [int(c) for c in ligne if c.isdigit()]
+            if len(nombres) == 9:
+                grille.append(nombres)
+        if len(grille) != 9:
+            print(f"{nom_fichier} mal forme, génération aléatoire.")
+            return generer_grille(difficulte)
         print(f"Grille chargée depuis {nom_fichier}.")
         return grille
     except FileNotFoundError:
