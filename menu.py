@@ -1,5 +1,4 @@
 # menu.py - Interface graphique du Sudoku
-# Projet M1 ILMSI - ESIEE-IT 2025/2026
 
 import tkinter as tk
 from tkinter import messagebox, simpledialog
@@ -10,7 +9,7 @@ from Generation import generer_grille, GRILLE_SOLUTION
 from Chargement import charger_sauvegarde, charger_grille
 from Sauvegarde import sauvegarder_partie, supprimer_sauvegarde
 
-# Couleurs
+# Couleurs de l'interface
 FOND         = "#f0f2f5"
 BANDEAU      = "#000000"
 BLANC        = "#ffffff"
@@ -41,6 +40,7 @@ ia_en_cours          = False
 
 FICHIER_SCORES = "scores.txt"
 
+# Gestion des scores dans le fichier
 def enregistrer_score(nom, points):
     fichier = open(FICHIER_SCORES, "a")
     fichier.write(nom + "," + str(points) + "\n")
@@ -84,8 +84,10 @@ def quitter_plein_ecran(event=None):
 app.bind("<F11>", basculer_plein_ecran)
 app.bind("<Escape>", quitter_plein_ecran)
 
-# Créer un bouton (tk.Label car macOS ignore bg sur tk.Button)
+# Utilitaire : créer un bouton avec un style cohérent
+
 def creer_bouton(parent, texte, commande, couleur=BANDEAU):
+    # On utilise tk.Label car sur macOS tk.Button ignore la couleur de fond
     bouton = tk.Label(
         parent,
         text=texte,
@@ -100,6 +102,7 @@ def creer_bouton(parent, texte, commande, couleur=BANDEAU):
     return bouton
 
 # Navigation entre les pages
+
 def cacher_toutes_les_frames():
     global frame_jeu, frame_page
     frame_accueil.pack_forget()
@@ -119,6 +122,7 @@ def montrer_jeu():
 def montrer_page(frame):
     cacher_toutes_les_frames()
     frame.pack(fill="both", expand=True)
+
 
 # Choix du niveau
 def ouvrir_niveaux():
@@ -378,11 +382,13 @@ def maj_timer():
     timer_label_jeu.config(text=str(minutes).zfill(2) + ":" + str(secondes).zfill(2))
     app.after(1000, maj_timer)
 
+# IA Joueur
 def lancer_ia():
     global ia_en_cours
     if ia_en_cours:
         return
 
+    # Trouver toutes les cases vides
     cases_vides = []
     for r in range(9):
         for c in range(9):
@@ -396,6 +402,7 @@ def lancer_ia():
 
     ia_en_cours = True
 
+    # Placer les chiffres un par un avec un délai
     def jouer_case(index):
         global ia_en_cours
         if index >= len(cases_vides):
@@ -424,22 +431,25 @@ def valider_saisie(valeur):
         return True
     return False
 
-# Afficher la grille de jeu
+# Afficher la grille de jeu dans la fenêtre principale
 def afficher_grille(nom_joueur, grille_actuelle, grille_originale):
     global score_total, frame_jeu, cellules
     global nom_joueur_courant, grille_orig_courante
     global score_label_jeu, timer_label_jeu, ia_label_jeu, bouton_ia_jeu
     global timer_actif, debut_partie
 
+    # Supprimer l'ancienne frame si elle existe
     if frame_jeu is not None:
         frame_jeu.destroy()
     frame_jeu = tk.Frame(app, bg=FOND)
 
+    # Mémoriser les données de la partie
     nom_joueur_courant   = nom_joueur
     grille_orig_courante = grille_originale
     debut_partie         = time.time()
     timer_actif          = True
 
+    # Enregistrer la fonction de validation
     vcmd = (app.register(valider_saisie), "%P")
 
     # Bandeau du haut
@@ -460,6 +470,7 @@ def afficher_grille(nom_joueur, grille_actuelle, grille_originale):
     cadre_grille = tk.Frame(frame_jeu, bg=BANDEAU, padx=4, pady=4)
     cadre_grille.pack(pady=12)
 
+    # Initialiser le tableau de cellules
     cellules = []
     for r in range(9):
         ligne_cellules = []
@@ -467,6 +478,7 @@ def afficher_grille(nom_joueur, grille_actuelle, grille_originale):
             ligne_cellules.append(None)
         cellules.append(ligne_cellules)
 
+    # Construire les 9 boîtes 3x3
     for boite_row in range(3):
         for boite_col in range(3):
             cadre_boite = tk.Frame(cadre_grille, bg=BANDEAU, padx=2, pady=2)
@@ -478,6 +490,7 @@ def afficher_grille(nom_joueur, grille_actuelle, grille_originale):
                     val_originale = grille_originale[r][c]
                     val_actuelle  = grille_actuelle[r][c]
                     if val_originale != 0:
+                        # Case pré-remplie
                         label = tk.Label(
                             cadre_boite,
                             text=str(val_originale),
@@ -487,6 +500,7 @@ def afficher_grille(nom_joueur, grille_actuelle, grille_originale):
                         )
                         label.grid(row=i, column=j, padx=1, pady=1)
                     else:
+                        # Case vide et modifiable
                         var = tk.StringVar()
                         if val_actuelle != 0:
                             var.set(str(val_actuelle))
@@ -506,10 +520,12 @@ def afficher_grille(nom_joueur, grille_actuelle, grille_originale):
                         entry.grid(row=i, column=j, padx=1, pady=1)
                         cellules[r][c] = (var, entry)
 
+    # Label pour les messages de l'IA
     ia_label_jeu = tk.Label(frame_jeu, text="",
                             font=("Arial", 10, "italic"), bg=FOND, fg=GRIS)
     ia_label_jeu.pack()
 
+    # Boutons du gameplay
     cadre_boutons = tk.Frame(frame_jeu, bg=FOND, pady=10)
     cadre_boutons.pack()
 
@@ -529,6 +545,7 @@ def afficher_grille(nom_joueur, grille_actuelle, grille_originale):
                                  lancer_ia, couleur=BANDEAU)
     bouton_ia_jeu.grid(row=0, column=3, padx=6)
 
+    # Raccourcis clavier
     app.bind("<p>", sauvegarder_partie_joueur)
     app.bind("<P>", sauvegarder_partie_joueur)
     app.bind("<i>", interrompre_partie)
@@ -536,8 +553,11 @@ def afficher_grille(nom_joueur, grille_actuelle, grille_originale):
     app.bind("<c>", effacer_case)
     app.bind("<C>", effacer_case)
 
+    # Démarrer le chronomètre
     maj_timer()
+
     montrer_jeu()
+
 
 # Page Scores
 def ouvrir_scores():
@@ -548,6 +568,7 @@ def ouvrir_scores():
 
     scores = lire_scores()
 
+    # Bandeau
     bandeau = tk.Frame(frame_page, bg=BANDEAU, pady=12)
     bandeau.pack(fill="x")
     tk.Label(bandeau, text="Tableau des scores",
@@ -557,6 +578,7 @@ def ouvrir_scores():
         tk.Label(frame_page, text="Aucun score enregistré.",
                  font=("Arial", 13), bg=FOND, fg=GRIS).pack(expand=True)
     else:
+        # Trier les joueurs du meilleur au moins bon
         liste_triee = []
         for nom in scores:
             liste_triee.append((scores[nom], nom))
@@ -571,6 +593,7 @@ def ouvrir_scores():
                  text="Meilleur : " + meilleur + "  ·  " + str(scores[meilleur]) + " pts",
                  font=("Arial", 11), bg=BANDEAU, fg=OR).pack()
 
+        # En-tête du tableau
         entete = tk.Frame(frame_page, bg="#dfe6e9", pady=5)
         entete.pack(fill="x", padx=24, pady=(10, 0))
         tk.Label(entete, text="#",      width=4,  font=("Arial", 10, "bold"),
@@ -580,6 +603,7 @@ def ouvrir_scores():
         tk.Label(entete, text="Score",  width=8,  font=("Arial", 10, "bold"),
                  bg="#dfe6e9", fg=GRIS, anchor="e").pack(side="right", padx=12)
 
+        # Zone liste avec scroll
         MAX_VISIBLE  = 5
         wrap         = tk.Frame(frame_page, bg=FOND)
         wrap.pack(fill="both", expand=True, padx=24, pady=4)
@@ -608,6 +632,7 @@ def ouvrir_scores():
             canvas_liste.yview_scroll(int(-1 * (event.delta / 120)), "units")
         canvas_liste.bind("<MouseWheel>", scroll_souris)
 
+        # Lignes du tableau
         for idx in range(len(noms_tries)):
             nom = noms_tries[idx]
             val = scores[nom]
@@ -631,12 +656,13 @@ def ouvrir_scores():
                      font=("Arial", 12, "bold"), bg=bg_ligne,
                      fg=couleur_pts, anchor="e").pack(side="right", padx=10)
 
+        # Graphique matplotlib
         try:
             import matplotlib.pyplot as plt
             from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
-            noms_graph      = noms_tries
-            valeurs_graph   = []
+            noms_graph    = noms_tries
+            valeurs_graph = []
             couleurs_barres = []
             for n in noms_graph:
                 valeurs_graph.append(scores[n])
@@ -670,9 +696,11 @@ def ouvrir_scores():
 
     b_retour = creer_bouton(frame_page, "<- Retour", montrer_accueil)
     b_retour.pack(pady=10, side="bottom")
+
     montrer_page(frame_page)
 
 # Page Règles
+
 def ouvrir_regles():
     global frame_page
     if frame_page is not None:
@@ -698,13 +726,13 @@ def ouvrir_regles():
         "I  ->  Interrompre (score negatif, non sauvegarde)",
         "C  ->  Effacer la case selectionnee",
         "",
-        "Scores  :  Facile +2 | Intermediaire +4 | Difficile +8",
-        "Abandon :  Facile -1 | Intermediaire -2 | Difficile -3",
+        "Scores  :  Facile +2 / Intermediaire +4 / Difficile +8",
+        "Abandon :  Facile -1 / Intermediaire -2 / Difficile -3",
         "",
         "Bonus temps :",
-        "Facile        - moins de 2 min : +3  |  moins de 5 min : +2  |  moins de 10 min : +1",
-        "Intermediaire - moins de 3 min : +3  |  moins de 8 min : +2  |  moins de 15 min : +1",
-        "Difficile     - moins de 5 min : +3  |  moins de 12 min : +2  |  moins de 20 min : +1",
+        "Facile : moins de 2 min : +3 / moins de 5 min : +2  /  moins de 10 min : +1",
+        "Intermediair : moins de 3 min : +3  / moins de 8 min : +2  /  moins de 15 min : +1",
+        "Difficile : moins de 5 min : +3  /  moins de 12 min : +2  /  moins de 20 min : +1",
         "",
         "IA_Joueur :",
         "Remplit automatiquement les cases vides une par une.",
@@ -722,6 +750,7 @@ def ouvrir_regles():
     tk.Frame(frame_page, bg=FOND).pack(expand=True)
     b_retour = creer_bouton(frame_page, "<- Retour", montrer_accueil)
     b_retour.pack(pady=10, side="bottom")
+
     montrer_page(frame_page)
 
 # Page Crédits
@@ -747,9 +776,10 @@ def ouvrir_credits():
     tk.Frame(frame_page, bg=FOND).pack(expand=True)
     b_retour = creer_bouton(frame_page, "<- Retour", montrer_accueil)
     b_retour.pack(pady=10, side="bottom")
+
     montrer_page(frame_page)
 
-# Frame Accueil
+# Frame Accueil (créée après les fonctions)
 frame_accueil = tk.Frame(app, bg=FOND)
 frame_accueil.pack(fill="both", expand=True)
 
@@ -776,4 +806,5 @@ for btn in [bouton_jouer, bouton_scores, bouton_regles, bouton_credits, bouton_q
     btn.config(width=18)
     btn.pack(pady=4)
 
+# Lancement de l'application
 app.mainloop()
